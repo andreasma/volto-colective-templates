@@ -1,9 +1,10 @@
 import React from 'react';
-import { Container, Segment } from 'semantic-ui-react';
+import { Container, Image, Segment } from 'semantic-ui-react';
 import { DefaultView } from '@plone/volto/components';
 import { searchContent } from '@plone/volto/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { flattenToAppURL } from '@plone/volto/helpers';
 
 const TlcenterView = props => {
     const { content } = props;
@@ -18,6 +19,9 @@ const TlcenterView = props => {
           {
             portal_type: ['tlproject'],
             fullobjects: true,
+            b_size: 5,
+            sort_on: 'effective',
+            sort_order: 'reverse',
           },
           'templateprojects',
         ),
@@ -34,16 +38,25 @@ const TlcenterView = props => {
           )}
         </header>
         <section id="content-core">
+        <h2>Most Recent {content.title}</h2>
           {tlprojects &&
             tlprojects.map((item) => (
               <Segment padded clearing key={item.id}>
-                <h2>
+                <h3>
                   <Link to={item['@id']} >
                     {item.title}
                   </Link>
-                </h2>
+                </h3>
+                {item.screenshot && (
+                  <Image
+                    src={flattenToAppURL(item.screenshot.scales.preview.download)}
+                    size="small"
+                    floated="right"
+                    alt={content.image_caption}
+                  />
+                )} 
+                
                 <p>{item.description}</p>
-                <div dangerouslySetInnerHTML={{ __html: item.details.data }} />
               </Segment>
             ))}
         </section>
